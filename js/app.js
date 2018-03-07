@@ -22,28 +22,23 @@ function modalInformation(artist){
 //function first request
 function handleResponse(films) {
     let dataFilms = films.results;
-    let output = " ";
-    let personajeURL;
-
+    let output = " "; //template general de las películas
+    let listCast = " "; //template donde va cada uno de los url(con dataset)
     let paintHTMLOne = dataFilms.forEach(movie => {
         let title = movie.title;
-        //console.log(title);
         let id = movie.episode_id;
-        //console.log(id);
         let characters = movie.characters;
-        //console.log(characters);
-        let listCast = " ";
-        //let personajeURL;
+        
         characters.forEach(person => {
-            personajeURL = person;
-            //console.log(personajeURL);
             listCast +=
-            `<li>
-            <a class="waves-effect waves-light btn modal-trigger" href="#modal1">${person}</a>
-            </li>`
+            `
+            <a class="waves-effect waves-light btn modal-trigger" href="#modal1">
+            <li class="cast-list" data-url="${person}">${person}</li>
+            </a>
+            `
         })
 
-        output += `
+        output += `<div class="col s12 m6 offset-m4" data-url="">
         <div class="col s12 m6 offset-m4">Name: ${title}</div>
         <div class="col s12 m6 offset-m4">Episode ID: ${id}</div>
         <br>
@@ -57,15 +52,30 @@ function handleResponse(films) {
     structure.classList.add("canvas")
     structure.innerHTML = output;
     container.appendChild(structure);
-
+    //new
+    let htmlCollection = document.getElementsByClassName("cast-list");
+    eventList(htmlCollection);
     //
-    //second petition
-    $.ajax({
-        url: personajeURL
-    }).done(modalInformation);
 }
 
+const eventList = (htmlCollection) => { //n
+    //console.log(htmlCollection);
+    let listCharacters = Array.from(htmlCollection);
+    //console.log(listCharacters);
+    listCharacters.forEach(li =>{
+        li.addEventListener("click", dataCast);
+    })
+}
 
+const dataCast = (e) => { //n
+    e.preventDefault;
+    let url = e.target.dataset.url;
+    console.log(url);
+    //second petition
+    $.ajax({
+        url: url
+    }).done(modalInformation);
+}
 
 //first ajax petition
 $.ajax({
@@ -73,6 +83,4 @@ $.ajax({
 }).done(handleResponse);
 
 //modal initialization
-$(document).ready(function () {
-    $('#modal1').modal();
-});
+$('.modal').modal();
